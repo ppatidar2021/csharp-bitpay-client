@@ -41,6 +41,7 @@ namespace BitPaySDK
         private EcKey _ecKey;
 
         private HttpClient _httpClient;
+        private object __env;
 
         /// <summary>
         ///     Return the identity of this client (i.e. the public key).
@@ -385,6 +386,39 @@ namespace BitPaySDK
             }
         }
 
+        /// <summary>
+        /// Pay an invoice with the mock transaction.
+        /// </summary>
+        /// <param name="invoiceId">The id of the invoice to pay.</param>
+        /// <param name="complete"> indicate if paid invoice should have status if complete true or a confirmed status.</param>
+        /// <returns>A bitpay generated invoice object.</returns>
+        /// <throws>InvoicePaymentException InvoicePaymentException class</throws>
+        public async Task<Invoice> PayInvoice(string invoiceId, bool complete = true)
+        {
+            if (__env != "test")
+                throw new InvoicePaymentException("Pay Invoice method only available in test or demo environments");
+            try 
+            {   
+                var parameters = InitDynamicParams();
+                parameters.Add("token", GetAccessToken(Facade.Merchant));
+                parameters.Add("complete", complete);
+                var json = JsonConvert.SerializeObject(parameters);
+                var response = await Put("invoices/pay/" + invoiceId, json);
+                var responseString = await ResponseToJsonString(response);
+                return JsonConvert.DeserializeObject<Invoice>(responseString);
+            }
+            catch (BitPayException ex)
+            {
+                throw new InvoicePaymentException(ex, ex.GetApiCode());
+            }
+            catch (Exception ex)
+            {
+                if (!(ex.GetType().IsSubclassOf(typeof(BitPayException)) || ex.GetType() == typeof(BitPayException)))
+                    throw new InvoicePaymentException(ex);
+
+                throw;
+            }
+        }
 
         ///     TODO to be deprecated in version 7.0
         /// <summary>

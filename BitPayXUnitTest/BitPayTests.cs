@@ -45,7 +45,7 @@ namespace BitPayXUnitTest
             // JSON minified with the BitPay configuration as in the required configuration file
             // and parsed into a IConfiguration object
             //var json = "{\"BitPayConfiguration\":{\"Environment\":\"Test\",\"EnvConfig\":{\"Test\":{\"PrivateKeyPath\":\"sec/bitpay_test_private.key\",\"ApiTokens\":{\"merchant\":\"A4qqz5JXoK5TMi3hD8EfKNHJB2ybLgdYRkbZwZ5M9ZgT\",\"payout\":\"G4pfTiUU7967YJs7Z7n8e2SuQPa2abDTgFrjFB5ZFZsT\"}},\"Prod\":{\"PrivateKeyPath\":\"\",\"ApiTokens\":{\"merchant\":\"\"}}}}}";
-            
+
             var json = File.ReadAllText(@"BitPay.config.json");
             var memoryJsonFile = new MemoryFileInfo("config.json", Encoding.UTF8.GetBytes(json), DateTimeOffset.Now);
             var memoryFileProvider = new MockFileProvider(memoryJsonFile);
@@ -147,6 +147,16 @@ namespace BitPayXUnitTest
             // create an invoice and make sure we receive an invoice url - which means we can check it online
             var basicInvoice = await _bitpay.CreateInvoice(new Invoice(10.0, Currency.USD));
             Assert.NotNull(basicInvoice.Url);
+        }
+
+        [Fact]
+        public async Task TestShouldPayInvoice()
+        {
+            // create an invoice and pay it.
+            var invoice = await _bitpay.CreateInvoice(new Invoice(100.0, Currency.USD));
+            var payInvoice = await _bitpay.PayInvoice(invoice.Id);
+            Assert.NotNull(invoice);
+            Assert.NotNull(payInvoice);
         }
 
         [Fact]

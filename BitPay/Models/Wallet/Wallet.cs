@@ -22,6 +22,8 @@ namespace BitPaySDK.Models.Wallet
         public bool PayPro { get; set; }
         public List<Currencies> Currencies { get; set; }
 
+        public string Image { get; set; }
+
         public bool ShouldSerializeKey()
         {
             return !string.IsNullOrEmpty(Key);
@@ -45,6 +47,11 @@ namespace BitPaySDK.Models.Wallet
         public bool ShouldSerializeCurrencies()
         {
             return false;
+        }
+
+        public bool ShouldSerializeImage()
+        {
+            return !string.IsNullOrEmpty(Image);
         }
     }
 }

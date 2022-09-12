@@ -151,6 +151,16 @@ namespace BitPayUnitTest
         }
 
         [TestMethod]
+        public async Task TestShouldPayInvoice()
+        {
+            // create an invoice and pay it.
+            var invoice = await _bitpay.CreateInvoice(new Invoice(100.0, Currency.USD));
+            var payInvoice = await _bitpay.PayInvoice(invoice.Id);
+            Assert.IsNotNull(invoice);
+            Assert.IsNotNull(payInvoice);
+        }
+
+        [TestMethod]
         public async Task TestShouldCreateInvoice100Eur() {
             // create an invoice and make sure we receive the correct price value back (EUR)
             var invoice = await _bitpay.CreateInvoice(new Invoice(100.0, Currency.EUR));

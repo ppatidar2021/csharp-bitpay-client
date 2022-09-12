@@ -8,6 +8,9 @@ namespace BitPaySDK.Models.Wallet
     public class Currencies
     {
         public string Code { get; set; }
+
+        public string Image { get; set; }
+
         public string WithdrawalFee { get; set; }
 
         [JsonProperty(PropertyName = "p2p")]
@@ -31,6 +34,11 @@ namespace BitPaySDK.Models.Wallet
         public bool ShouldSerializeWithdrawalFee()
         {
             return !string.IsNullOrEmpty(WithdrawalFee); 
+        }
+
+        public bool ShouldSerializeImage()
+        {
+            return !string.IsNullOrEmpty(Image);
         }
 
         public bool ShouldSerializeP2P()
